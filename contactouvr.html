@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestion des Contacts des Employés</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #ece9e6, #ffffff);
+            padding: 20px;
+            color: #333;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: #fff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 2em;
+        }
+        h2 {
+            color: #34495e;
+            margin: 20px 0 10px;
+            font-size: 1.5em;
+        }
+        form {
+            display: grid;
+            gap: 15px;
+            background: #f9f9f9;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid #eee;
+            position: relative;
+        }
+        input, select {
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            font-size: 1em;
+            transition: border-color 0.3s;
+        }
+        input:focus {
+            border-color: #3498db;
+            outline: none;
+        }
+        label {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1em;
+            color: #555;
+        }
+        button {
+            padding: 12px;
+            background: #27ae60;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        button:hover {
+            background: #219653;
+        }
+        .roles {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        .role-container {
+            display: flex;
+            align-items: center;
+        }
+        .role-button {
+            background: #3498db;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: background 0.3s, transform 0.2s;
+        }
+        .role-button:hover {
+            background: #2980b9;
+            transform: scale(1.05);
+        }
+        .delete-role-icon {
+            color: #e74c3c;
+            margin-left: 10px;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+        .delete-role-icon:hover {
+            color: #c0392b;
+        }
+        .employees-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        .employees-table th, .employees-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        .employees-table th {
+            background: #34495e;
+            color: white;
+        }
+        .employees-table tr:nth-child(even) {
+            background: #f2f2f2;
+        }
+        .employees-table tr:hover {
+            background: #e0e0e0;
+        }
+        .whatsapp {
+            color: #27ae60;
+            font-weight: bold;
+        }
+        .delete-icon {
+            color: #e74c3c;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+        .delete-icon:hover {
+            color: #c0392b;
+        }
+        .role-list-icon {
+            margin-left: 10px;
+            cursor: pointer;
+            color: #3498db;
+        }
+        .role-list-icon:hover {
+            color: #2980b9;
+        }
+        .popup {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+        }
+        .popup.active {
+            display: block;
+        }
+        .popup-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            width: 300px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .role-list {
+            list-style: none;
+            padding: 0;
+        }
+        .role-list li {
+            padding: 10px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        .role-list li:hover {
+            background: #f0f0f0;
+        }
+        .close-popup {
+            margin-top: 10px;
+            padding: 10px;
+            background: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+        .close-popup:hover {
+            background: #c0392b;
+        }
+        @media (max-width: 600px) {
+            .container {
+                padding: 15px;
+            }
+            form {
+                padding: 15px;
+            }
+            .roles {
+                flex-direction: column;
+            }
+            .role-container {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 10px;
+            }
+            .role-button {
+                flex: 1;
+                margin-right: 10px;
+            }
+            .delete-role-icon {
+                font-size: 1.2em;
+            }
+            .employees-table th, .employees-table td {
+                padding: 8px;
+            }
+            .popup-content {
+                width: 90%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Gestion des Contacts des Employés</h1>
+        <form id="employeeForm">
+            <div style="display: flex; align-items: center;">
+                <input type="text" id="role" placeholder="Rôle" list="rolesList" required>
+                <span class="role-list-icon"><i class="fas fa-list"></i></span>
+            </div>
+            <datalist id="rolesList"></datalist>
+            <input type="text" id="name" placeholder="Nom" required>
+            <input type="tel" id="phone" placeholder="Numéro de téléphone" required>
+            <label>
+                <input type="checkbox" id="whatsapp"> WhatsApp disponible
+            </label>
+            <button type="submit">Ajouter Employé</button>
+        </form>
+        <h2>Rôles Enregistrés</h2>
+        <div class="roles" id="roles"></div>
+        <h2>Employés</h2>
+        <table class="employees-table" id="employeesTable">
+            <thead>
+                <tr>
+                    <th>Nom</th>
+                    <th>Rôle</th>
+                    <th>Numéro</th>
+                    <th>WhatsApp</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody id="employeesBody"></tbody>
+        </table>
+    </div>
+    <div class="popup" id="rolePopup">
+        <div class="popup-content">
+            <h3>Choisir un rôle existant</h3>
+            <ul class="role-list"></ul>
+            <button class="close-popup">Fermer</button>
+        </div>
+    </div>
+
+    <script type="module">
+        // Importer les modules Firebase nécessaires
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js";
+        import { getDatabase, ref, onValue, set, push } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-database.js";
+
+        // Configuration Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyDgrLBx_yB617KhpgRv0VGHGvIWf_w2pvM",
+            authDomain: "archive-371ec.firebaseapp.com",
+            databaseURL: "https://archive-371ec-default-rtdb.firebaseio.com",
+            projectId: "archive-371ec",
+            storageBucket: "archive-371ec.appspot.com",
+            messagingSenderId: "913144277477",
+            appId: "1:913144277477:web:3f26e18cfe5bae704d670c",
+            measurementId: "G-ZK7Z6T5J3C"
+        };
+
+        // Initialiser Firebase
+        const app = initializeApp(firebaseConfig);
+        const database = getDatabase(app);
+
+        // Références Firebase
+        const rolesRef = ref(database, 'roles');
+        const employeesRef = ref(database, 'employees');
+
+        // Éléments du DOM
+        const employeeForm = document.getElementById('employeeForm');
+        const roleInput = document.getElementById('role');
+        const nameInput = document.getElementById('name');
+        const phoneInput = document.getElementById('phone');
+        const whatsappCheckbox = document.getElementById('whatsapp');
+        const rolesList = document.getElementById('rolesList');
+        const rolesDiv = document.getElementById('roles');
+        const employeesBody = document.getElementById('employeesBody');
+        const roleListIcon = document.querySelector('.role-list-icon');
+        const rolePopup = document.getElementById('rolePopup');
+        const roleList = rolePopup.querySelector('.role-list');
+        const closePopupButton = rolePopup.querySelector('.close-popup');
+
+        let rolesArray = [];
+
+        // Charger les rôles existants
+        onValue(rolesRef, (snapshot) => {
+            const roles = snapshot.val() || {};
+            rolesArray = Object.keys(roles);
+            rolesList.innerHTML = '';
+            rolesDiv.innerHTML = '';
+            for (let role of rolesArray) {
+                // Ajouter à la datalist
+                const option = document.createElement('option');
+                option.value = role;
+                rolesList.appendChild(option);
+                // Ajouter aux boutons de rôles avec icône de suppression
+                const roleContainer = document.createElement('div');
+                roleContainer.className = 'role-container';
+                roleContainer.innerHTML = `
+                    <button class="role-button">${role}</button>
+                    <i class="fas fa-trash delete-role-icon" data-role="${role}"></i>
+                `;
+                rolesDiv.appendChild(roleContainer);
+                roleContainer.querySelector('.role-button').addEventListener('click', () => loadEmployees(role));
+                roleContainer.querySelector('.delete-role-icon').addEventListener('click', () => deleteRole(role));
+            }
+        });
+
+        // Ajouter un employé
+        employeeForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const role = roleInput.value.trim();
+            const name = nameInput.value.trim();
+            const phone = phoneInput.value.trim();
+            const whatsapp = whatsappCheckbox.checked;
+
+            if (role && name && phone) {
+                // Ajouter le rôle s'il n'existe pas
+                set(ref(database, 'roles/' + role), true);
+                // Ajouter l'employé
+                push(ref(database, 'employees/' + role), {
+                    name: name,
+                    phone: phone,
+                    whatsapp: whatsapp
+                });
+                // Réinitialiser le formulaire
+                employeeForm.reset();
+            }
+        });
+
+        // Charger les employés d’un rôle
+        function loadEmployees(role) {
+            onValue(ref(database, 'employees/' + role), (snapshot) => {
+                const employees = snapshot.val() || {};
+                employeesBody.innerHTML = '';
+                for (let id in employees) {
+                    const emp = employees[id];
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${emp.name}</td>
+                        <td>${role}</td>
+                        <td>${emp.phone}</td>
+                        <td>${emp.whatsapp ? '<span class="whatsapp">Oui</span>' : 'Non'}</td>
+                        <td><i class="fas fa-trash delete-icon" data-role="${role}" data-id="${id}"></i></td>
+                    `;
+                    employeesBody.appendChild(row);
+                }
+                // Ajouter des écouteurs pour les icônes de suppression
+                document.querySelectorAll('.delete-icon').forEach(icon => {
+                    icon.addEventListener('click', (e) => {
+                        const role = e.target.getAttribute('data-role');
+                        const id = e.target.getAttribute('data-id');
+                        deleteEmployee(role, id);
+                    });
+                });
+            });
+        }
+
+        // Supprimer un employé
+        function deleteEmployee(role, id) {
+            const employeeRef = ref(database, `employees/${role}/${id}`);
+            set(employeeRef, null);
+        }
+
+        // Supprimer un rôle et ses employés
+        function deleteRole(role) {
+            const roleRef = ref(database, `roles/${role}`);
+            const employeesRoleRef = ref(database, `employees/${role}`);
+            set(roleRef, null);
+            set(employeesRoleRef, null);
+        }
+
+        // Gestion de la popup des rôles
+        roleListIcon.addEventListener('click', () => {
+            if (rolePopup.classList.contains('active')) {
+                closePopup();
+            } else {
+                openPopup();
+            }
+        });
+
+        function openPopup() {
+            roleList.innerHTML = '';
+            for (let role of rolesArray) {
+                const li = document.createElement('li');
+                li.textContent = role;
+                li.addEventListener('click', () => {
+                    roleInput.value = role;
+                    closePopup();
+                });
+                roleList.appendChild(li);
+            }
+            rolePopup.classList.add('active');
+        }
+
+        function closePopup() {
+            rolePopup.classList.remove('active');
+        }
+
+        // Fermer la popup en cliquant en dehors
+        document.addEventListener('click', (e) => {
+            if (!rolePopup.contains(e.target) && !roleListIcon.contains(e.target)) {
+                closePopup();
+            }
+        });
+
+        // Fermer la popup avec le bouton
+        closePopupButton.addEventListener('click', closePopup);
+    </script>
+</body>
+</html>
